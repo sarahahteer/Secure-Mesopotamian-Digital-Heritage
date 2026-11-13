@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="description"
+          content="منصة آمنة لتوثيق وحفظ التراث الثقافي والآثار العراقية رقمياً">
+
+    <title>{% block title %}الأرشيف الرقمي الآمن{% endblock %}</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<div class="app-layout">
+
+    <!-- القائمة الجانبية -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+            <div class="brand-symbol">𒀭</div>
+            <div>
+                <h2>تراث الرافدين</h2>
+                <span>الأرشيف الرقمي الآمن</span>
+            </div>
+        </div>
+
+        <div class="sidebar-label">القائمة الرئيسية</div>
+
+        <nav class="side-nav">
+
+            <a href="{{ url_for('home') }}" class="nav-link">
+                <span>⌂</span>
+                <span>لوحة التحكم</span>
+            </a>
+
+            <a href="{{ url_for('artifacts') }}" class="nav-link">
+                <span>𒀸</span>
+                <span>القطع الأثرية</span>
+            </a>
+
+            <a href="{{ url_for('sites') }}" class="nav-link">
+                <span>▦</span>
+                <span>المواقع الأثرية</span>
+            </a>
+
+            <a href="{{ url_for('manuscripts') }}" class="nav-link">
+                <span>▤</span>
+                <span>المخطوطات والوثائق</span>
+            </a>
+
+            <a href="{{ url_for('search') }}" class="nav-link">
+                <span>⌕</span>
+                <span>البحث في الأرشيف</span>
+            </a>
+
+            <!-- رابط إدارة المستخدمين (يظهر للمشرفين فقط) -->
+            {% if current_user.is_authenticated and current_user.role in ['admin', 'super_admin'] %}
+                <a href="{{ url_for('admin.users') }}" class="nav-link">
+                    <span>⚙</span>
+                    <span>إدارة المستخدمين</span>
+                </a>
+            {% endif %}
+         
+            <!-- زر تسجيل الخروج (يظهر للمستخدم المُسجّل دخوله فقط) -->
+            {% if current_user.is_authenticated %}
+                <form method="POST" action="{{ url_for('auth.logout') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="nav-link">
+                        <span>↪</span>
+                        <span>تسجيل الخروج</span>
+                    </button>
+                </form>
+            {% endif %}
+
+        </nav>
+
+        <div class="sidebar-footer">
+            <span class="status-dot"></span>
+            النظام يعمل محلياً
+        </div>
+
+    </aside>
+
+    <!-- المحتوى الرئيسي -->
+    <div class="main-area">
+
+        <header class="topbar">
+
+            <button class="menu-toggle"
+                    id="menuToggle"
+                    type="button"
+                    aria-label="فتح القائمة"
+                    aria-expanded="false">
+                ☰
+            </button>
+
+            <div class="topbar-title">
+                {% block page_heading %}منصة التراث الرقمي العراقي{% endblock %}
+            </div>
+
+            <div class="topbar-info">
+                <span>نظام الأرشفة والحماية الرقمية</span>
+            </div>
+
+        </header>
+
+        <main class="container">
+
+            {% block content %}{% endblock %}
+
+        </main>
+
+        <footer class="site-footer">
+            منصة بحثية لحفظ وتوثيق التراث الثقافي العراقي
+            <span>© 2026</span>
+        </footer>
+
+    </div>
+
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+</body>
+</html>

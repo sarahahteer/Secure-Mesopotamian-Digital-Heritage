@@ -1,0 +1,95 @@
+
+{% extends "base.html" %}
+
+{% block title %}تفعيل الحساب{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h2>تفعيل حساب جديد</h2>
+    <p>أدخلي بيانات الدعوة واختاري بريدك الإلكتروني وكلمة المرور.</p>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endwith %}
+
+<div class="card">
+
+    <form method="POST" action="{{ url_for('auth.activate') }}">
+
+        <input type="hidden"
+               name="csrf_token"
+               value="{{ csrf_token() }}">
+
+        <div class="form-group">
+            <label for="username">اسم المستخدم</label>
+            <input
+                type="text"
+                id="username"
+                name="username"
+                minlength="3"
+                maxlength="80"
+                required
+                autocomplete="username">
+        </div>
+
+        <div class="form-group">
+            <label for="token">رمز الدعوة</label>
+            <textarea
+                id="token"
+                name="token"
+                rows="3"
+                required
+                style="width:100%; direction:ltr;"
+                autocomplete="off"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="email">البريد الإلكتروني</label>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                maxlength="255"
+                required
+                autocomplete="email">
+        </div>
+
+        <div class="form-group">
+            <label for="password">كلمة المرور</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                minlength="12"
+                required
+                autocomplete="new-password">
+            <small>12 حرفاً على الأقل.</small>
+        </div>
+
+        <div class="form-group">
+            <label for="confirm_password">تأكيد كلمة المرور</label>
+            <input
+                type="password"
+                id="confirm_password"
+                name="confirm_password"
+                minlength="12"
+                required
+                autocomplete="new-password">
+        </div>
+
+        <button type="submit" class="btn-primary">
+            تفعيل الحساب
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}
+

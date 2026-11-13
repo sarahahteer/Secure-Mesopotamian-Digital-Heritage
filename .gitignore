@@ -1,0 +1,30 @@
+__pycache__/
+*.py[cod]
+.env
+.venv/
+venv/
+instance/
+uploads/*
+!uploads/.gitkeep
+.pytest_cache/
+.coverage
+
+# Environment secrets
+.env.*
+!.env.example
+
+# Database backups and local database files
+*.sqlite
+*.sqlite3
+*.db
+*.bak
+*.dump
+
+# Logs
+*.log
+
+# Python test artifacts
+htmlcov/
+.pytest_cache/
+# Local editor settings
+.vscode/

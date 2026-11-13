@@ -1,0 +1,74 @@
+
+{% extends "base.html" %}
+
+{% block title %}إنشاء دعوة مستخدم{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h2>إنشاء دعوة مستخدم جديد</h2>
+    <p>إنشاء حساب مبدئي وإصدار رمز دعوة مؤقت.</p>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endwith %}
+
+<div class="card">
+    <form method="POST">
+
+        <input type="hidden"
+               name="csrf_token"
+               value="{{ csrf_token() }}">
+
+        <div class="form-group">
+            <label for="username">اسم المستخدم</label>
+            <input
+                type="text"
+                id="username"
+                name="username"
+                minlength="3"
+                maxlength="80"
+                required
+                autocomplete="off"
+                placeholder="أدخل اسم المستخدم">
+        </div>
+
+        <div class="form-group">
+            <label for="role">نوع الحساب</label>
+
+            <select id="role" name="role" required>
+                <option value="">اختر نوع الحساب</option>
+
+                {% if "assistant_admin" in allowed_roles %}
+                <option value="assistant_admin">
+                    مدير مساعد
+                </option>
+                {% endif %}
+
+                {% if "senior_researcher" in allowed_roles %}
+                <option value="senior_researcher">
+                    باحث أول
+                </option>
+                {% endif %}
+
+                {% if "researcher" in allowed_roles %}
+                <option value="researcher">
+                    باحث
+                </option>
+                {% endif %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn-primary">
+            إنشاء الدعوة
+        </button>
+
+    </form>
+</div>
+
+{% endblock %}

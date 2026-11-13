@@ -1,0 +1,164 @@
+
+{% extends "base.html" %}
+
+{% block title %}
+    {% if researchers_only %}إدارة الباحثين{% else %}إدارة المستخدمين{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h2>
+            {% if researchers_only %}
+                إدارة الباحثين
+            {% else %}
+                إدارة المستخدمين
+            {% endif %}
+        </h2>
+
+        <p>
+            {% if researchers_only %}
+                عرض وإدارة حسابات الباحثين والباحثين الأوائل فقط.
+            {% else %}
+                عرض حسابات المستخدمين وإدارة حسابات الباحثين.
+            {% endif %}
+        </p>
+    </div>
+
+    <div>
+        <a href="{{ url_for('admin.create_invitation') }}"
+           class="btn btn-primary">
+            {% if researchers_only %}
+                إنشاء دعوة باحث
+            {% else %}
+                إنشاء دعوة مستخدم
+            {% endif %}
+        </a>
+    </div>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endwith %}
+
+<div class="card">
+    <h3>قائمة الحسابات</h3>
+
+    <div style="overflow-x:auto;">
+        <table style="width:100%; border-collapse:collapse;">
+            <thead>
+                <tr>
+                    <th>الرقم</th>
+                    <th>اسم المستخدم</th>
+                    <th>البريد الإلكتروني</th>
+                    <th>الدور</th>
+                    <th>الحالة</th>
+                    <th>تاريخ الإنشاء</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+
+                    <td>
+                        {% if user.role == "super_admin" %}
+                            <strong>مدير أعلى</strong>
+                        {% elif user.role == "assistant_admin" %}
+                            مدير مساعد
+                        {% elif user.role == "senior_researcher" %}
+                            باحث أول
+                        {% elif user.role == "researcher" %}
+                            باحث
+                        {% else %}
+                            {{ user.role }}
+                        {% endif %}
+                    </td>
+
+                    {% if user.role in ["researcher", "senior_researcher"] %}
+
+                        <form method="POST"
+                              action="{% if researchers_only %}{{ url_for('admin.update_researcher', user_id=user.id) }}{% else %}{{ url_for('admin.update_user', user_id=user.id) }}{% endif %}">
+
+                            <td>
+                                <select name="is_active">
+                                    <option value="1"
+                                        {% if user.is_active %}selected{% endif %}>
+                                        نشط
+                                    </option>
+                                    <option value="0"
+                                        {% if not user.is_active %}selected{% endif %}>
+                                        معطل
+                                    </option>
+                                </select>
+                            </td>
+
+                            <td>
+                                {{ user.created_at.strftime('%Y-%m-%d') if user.created_at else '-' }}
+                            </td>
+
+                            <td>
+                                <input type="hidden"
+                                       name="csrf_token"
+                                       value="{{ csrf_token() }}">
+
+                                <select name="role">
+                                    <option value="researcher"
+                                        {% if user.role == "researcher" %}selected{% endif %}>
+                                        باحث
+                                    </option>
+                                    <option value="senior_researcher"
+                                        {% if user.role == "senior_researcher" %}selected{% endif %}>
+                                        باحث أول
+                                    </option>
+                                </select>
+
+                                <button type="submit" class="btn-primary">
+                                    حفظ التغييرات
+                                </button>
+                            </td>
+                        </form>
+
+                    {% else %}
+
+                        <td>
+                            {% if user.is_active %}
+                                نشط
+                            {% else %}
+                                معطل
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {{ user.created_at.strftime('%Y-%m-%d') if user.created_at else '-' }}
+                        </td>
+
+                        <td>
+                            <span>حساب إداري محمي</span>
+                        </td>
+
+                    {% endif %}
+                </tr>
+
+                {% else %}
+                <tr>
+                    <td colspan="7" style="text-align:center; padding:20px;">
+                        لا توجد حسابات حالياً.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

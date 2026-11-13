@@ -1,0 +1,66 @@
+
+{% extends "base.html" %}
+
+{% block title %}تم إنشاء الدعوة{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h2>تم إنشاء الدعوة بنجاح</h2>
+    <p>احتفظي برمز الدعوة وأرسليه إلى المستخدم المعني.</p>
+</div>
+
+<div class="card">
+
+    <h3>بيانات الدعوة</h3>
+
+    <p>
+        <strong>اسم المستخدم:</strong>
+        {{ invitation.username }}
+    </p>
+
+    <p>
+        <strong>نوع الحساب:</strong>
+        {% if invitation.role == "assistant_admin" %}
+            مدير مساعد
+        {% elif invitation.role == "senior_researcher" %}
+            باحث أول
+        {% else %}
+            باحث
+        {% endif %}
+    </p>
+
+    <p>
+        <strong>تنتهي الدعوة في:</strong>
+        {{ invitation.expires_at.strftime('%Y-%m-%d %H:%M UTC') }}
+    </p>
+
+    <hr>
+
+    <label for="invitation-token">
+        رمز الدعوة المؤقت
+    </label>
+
+    <textarea
+        id="invitation-token"
+        readonly
+        rows="3"
+        style="width:100%; direction:ltr;"
+    >{{ token }}</textarea>
+
+    <button
+        type="button"
+        class="btn-primary"
+        onclick="navigator.clipboard.writeText(document.getElementById('invitation-token').value).then(() => alert('تم نسخ الرمز'))"
+    >
+        نسخ رمز الدعوة
+    </button>
+
+    <p style="margin-top:15px; color:#a33;">
+        تنبيه: لن يظهر هذا الرمز مرة أخرى بعد مغادرة الصفحة.
+        يجب إرساله للمستخدم بطريقة آمنة.
+    </p>
+
+</div>
+
+{% endblock %}

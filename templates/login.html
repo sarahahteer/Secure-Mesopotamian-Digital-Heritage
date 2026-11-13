@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}تسجيل الدخول | تراث الرافدين{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+    <p class="eyebrow">نظام الحماية الرقمية</p>
+    <h1>تسجيل الدخول</h1>
+    <p>مرحباً بك في منصة الأرشيف الرقمي الآمن للتراث العراقي.</p>
+</section>
+
+<div class="collection" style="max-width: 500px; margin: 30px auto;">
+
+    <form method="POST" action="{{ url_for('auth.login') }}">
+
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div style="margin-bottom: 20px;">
+            <label for="username">اسم المستخدم</label>
+            <input
+                type="text"
+                id="username"
+                name="username"
+                required
+                autocomplete="username"
+                style="width: 100%; padding: 12px; margin-top: 8px;"
+            >
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label for="password">كلمة المرور</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                required
+                autocomplete="current-password"
+                style="width: 100%; padding: 12px; margin-top: 8px;"
+            >
+        </div>
+
+        <button type="submit" class="btn-primary">
+            تسجيل الدخول
+        </button>
+
+        <p style="margin-top: 20px; text-align: center;">
+            لديك دعوة لإنشاء حساب؟
+            <a href="{{ url_for('auth.activate') }}"
+               style="color: #B08A4A; font-weight: bold;">
+                تفعيل الحساب
+            </a>
+        </p>
+
+    </form>
+
+</div>
+
+{% endblock %}

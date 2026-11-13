@@ -1,0 +1,117 @@
+
+{% extends "base.html" %}
+
+{% block title %}لوحة التحكم | تراث الرافدين{% endblock %}
+{% block page_heading %}لوحة التحكم الرئيسية{% endblock %}
+
+{% block content %}
+
+<section class="dashboard-hero">
+    <div>
+        <p class="eyebrow">منصة التراث الثقافي العراقي</p>
+        <h1>ذاكرة الماضي… محفوظة بأمان للمستقبل</h1>
+        <p>
+            منصة رقمية لتوثيق القطع والمواقع الأثرية
+            والمخطوطات والوثائق التاريخية وحمايتها.
+        </p>
+    </div>
+    <div class="hero-symbol" aria-hidden="true">𒀭</div>
+</section>
+
+<section class="stats-grid" aria-label="إحصائيات الأرشيف">
+
+    <article class="stat-card">
+        <div class="stat-icon">𒀸</div>
+        <div class="stat-label">القطع الأثرية</div>
+        <div class="stat-number">{{ stats.artifacts }}</div>
+        <a href="{{ url_for('artifacts') }}">عرض القطع ←</a>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-icon">▦</div>
+        <div class="stat-label">المواقع الأثرية</div>
+        <div class="stat-number">{{ stats.sites }}</div>
+        <a href="{{ url_for('sites') }}">عرض المواقع ←</a>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-icon">▤</div>
+        <div class="stat-label">المخطوطات والوثائق</div>
+        <div class="stat-number">{{ stats.manuscripts }}</div>
+        <a href="{{ url_for('manuscripts') }}">عرض الوثائق ←</a>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-icon">♙</div>
+        <div class="stat-label">المستخدمون</div>
+        <div class="stat-number">{{ stats.users }}</div>
+        <span class="stat-note">الحسابات المسجلة</span>
+    </article>
+
+</section>
+
+<section class="dashboard-section">
+    <div class="section-title">
+        <div>
+            <p class="eyebrow">محتويات الأرشيف</p>
+            <h2>المجموعات الرئيسية</h2>
+        </div>
+    </div>
+
+    <div class="collection-grid">
+
+        <a href="{{ url_for('artifacts') }}" class="collection-card">
+            <span class="collection-symbol">𒀸</span>
+            <h3>القطع الأثرية</h3>
+            <p>توثيق اللقى والمقتنيات والمواد الأثرية العراقية.</p>
+            <span class="collection-link">الدخول إلى القسم ←</span>
+        </a>
+
+        <a href="{{ url_for('sites') }}" class="collection-card">
+            <span class="collection-symbol">▦</span>
+            <h3>المواقع الأثرية</h3>
+            <p>توثيق المواقع وبياناتها الجغرافية والتاريخية.</p>
+            <span class="collection-link">الدخول إلى القسم ←</span>
+        </a>
+
+        <a href="{{ url_for('manuscripts') }}" class="collection-card">
+            <span class="collection-symbol">▤</span>
+            <h3>المخطوطات والوثائق</h3>
+            <p>حفظ الوثائق والمخطوطات والسجلات التاريخية.</p>
+            <span class="collection-link">الدخول إلى القسم ←</span>
+        </a>
+
+    </div>
+</section>
+
+<section class="dashboard-section quick-section">
+    <div class="section-title">
+        <div>
+            <p class="eyebrow">الوصول السريع</p>
+            <h2>أدوات الأرشيف</h2>
+        </div>
+    </div>
+
+    <form class="archive-search" action="{{ url_for('search') }}" method="get">
+        <input
+            type="search"
+            name="q"
+            placeholder="ابحث عن قطعة أثرية أو موقع أو مخطوطة..."
+            aria-label="عبارة البحث"
+        >
+        <button type="submit">بحث في الأرشيف</button>
+    </form>
+</section>
+
+<section class="security-note">
+    <span class="security-symbol">◇</span>
+    <div>
+        <h3>حماية التراث الرقمي</h3>
+        <p>
+            تهدف المنصة إلى دعم توثيق التراث الثقافي العراقي
+            مع تطبيق ضوابط أمنية لحماية البيانات والملفات الرقمية.
+        </p>
+    </div>
+</section>
+
+{% endblock %}

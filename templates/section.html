@@ -1,0 +1,28 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<section class="section-page" dir="rtl">
+    <div class="section-heading">
+        <h1>{{ title }}</h1>
+        <p>{{ description }}</p>
+    </div>
+
+    {% if section == "search" %}
+    <form action="{{ url_for('search') }}" method="get">
+        <input
+            type="search"
+            name="q"
+            value="{{ query|default('') }}"
+            placeholder="ابحث في الأرشيف..."
+        >
+        <button type="submit">بحث</button>
+    </form>
+    {% else %}
+    <div class="section-empty">
+        <h2>قسم {{ title }}</h2>
+        <p>سيتم ربط هذا القسم بقاعدة بيانات PostgreSQL في المرحلة التالية.</p>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}
