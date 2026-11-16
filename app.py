@@ -1,5 +1,8 @@
+﻿
 import os
 from flask import Flask, render_template, request
+from flask_migrate import Migrate
+
 from config import Config
 from extensions import db, login_manager, csrf, limiter
 from models import User, Artifact, ArchaeologicalSite, Manuscript
@@ -16,6 +19,7 @@ def create_app(config_class=Config):
     os.makedirs(app.config["ENCRYPTED_UPLOAD_DIR"], exist_ok=True)
 
     db.init_app(app)
+    Migrate(app, db)
     login_manager.init_app(app)
     csrf.init_app(app)
     limiter.init_app(app)
@@ -32,6 +36,10 @@ def create_app(config_class=Config):
     # تسجيل مسارات إدارة المستخدمين
     from admin.routes import admin_bp
     app.register_blueprint(admin_bp)
+
+    # تسجيل مسارات القطع الأثرية
+    from artifacts.routes import artifacts_bp
+    app.register_blueprint(artifacts_bp)
 
     @login_manager.user_loader
     def load_user(user_id):
@@ -51,16 +59,6 @@ def create_app(config_class=Config):
         }
 
         return render_template("dashboard.html", stats=stats)
-
-    @app.get("/artifacts")
-    @permission_required("view")
-    def artifacts():
-        return render_template(
-            "section.html",
-            title="القطع الأثرية",
-            description="أرشيف القطع الأثرية العراقية وتوثيق بياناتها العلمية.",
-            section="artifacts"
-        )
 
     @app.get("/sites")
     @permission_required("view")
@@ -89,7 +87,11 @@ def create_app(config_class=Config):
         return render_template(
             "section.html",
             title="البحث في الأرشيف",
-            description=f"نتائج البحث عن: {query}" if query else "أدخل عبارة للبحث في الأرشيف.",
+            description=(
+                f"نتائج البحث عن: {query}"
+                if query
+                else "أدخل عبارة للبحث في الأرشيف."
+            ),
             section="search",
             query=query
         )

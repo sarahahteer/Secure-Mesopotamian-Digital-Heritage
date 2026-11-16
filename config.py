@@ -1,4 +1,4 @@
-
+﻿
 import os
 from pathlib import Path
 from dotenv import load_dotenv
@@ -24,6 +24,10 @@ elif database_url.startswith("postgresql://"):
 class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev-only-change-this-secret")
     SQLALCHEMY_DATABASE_URI = database_url
+    FILE_ENCRYPTION_KEY = os.environ.get("FILE_ENCRYPTION_KEY")
+    SUPABASE_URL = os.environ.get("SUPABASE_URL")
+    SUPABASE_SECRET_KEY = os.environ.get("SUPABASE_SECRET_KEY")
+    SUPABASE_BUCKET = os.environ.get("SUPABASE_BUCKET")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     MAX_CONTENT_LENGTH = 20 * 1024 * 1024
     SESSION_COOKIE_HTTPONLY = True

@@ -1,0 +1,79 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+<section class="section-page" dir="rtl">
+
+    <div class="section-heading">
+        <h1>القطع الأثرية</h1>
+        <p>أرشيف القطع الأثرية العراقية وتوثيق بياناتها العلمية.</p>
+    </div>
+
+    <div class="section-actions">
+        {% if can_create %}
+        <a href="{{ url_for('artifacts.create') }}" class="btn">
+            إضافة قطعة أثرية
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="section-content">
+        {% if artifacts %}
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>صورة القطعة</th>
+                        <th>رقم الجرد</th>
+                        <th>اسم القطعة</th>
+                        <th>الحقبة التاريخية</th>
+                        <th>المادة</th>
+                        <th>مكان الاكتشاف</th>
+                        <th>الحالة</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for artifact in artifacts %}
+                    <tr>
+                        <td>
+                            {% set images = artifact.media_files
+                                |selectattr("encrypted")
+                                |selectattr("scan_status", "equalto", "clean")
+                                |list
+                            %}
+
+                            {% if images %}
+                                {% for image in images %}
+                                <img
+                                    src="{{ url_for('artifacts.artifact_image', media_id=image.id) }}"
+                                    alt="{{ artifact.name_ar }}"
+                                    loading="lazy"
+                                    style="width:100px;height:90px;object-fit:contain;border-radius:8px;"
+                                >
+                                {% endfor %}
+                            {% else %}
+                                <span>لا توجد صورة</span>
+                            {% endif %}
+                        </td>
+
+                        <td>{{ artifact.inventory_number }}</td>
+                        <td>{{ artifact.name_ar }}</td>
+                        <td>{{ artifact.period or "غير محدد" }}</td>
+                        <td>{{ artifact.material or "غير محدد" }}</td>
+                        <td>{{ artifact.discovery_location or "غير محدد" }}</td>
+                        <td>{{ artifact.status }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="section-empty">
+            <h2>لا توجد قطع أثرية مسجلة حالياً</h2>
+            <p>يمكنك إضافة أول قطعة أثرية إلى الأرشيف.</p>
+        </div>
+        {% endif %}
+    </div>
+
+</section>
+{% endblock %}

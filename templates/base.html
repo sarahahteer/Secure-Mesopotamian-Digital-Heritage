@@ -2,17 +2,13 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <meta name="description"
-          content="منصة آمنة لتوثيق وحفظ التراث الثقافي والآثار العراقية رقمياً">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="منصة آمنة لتوثيق وحفظ التراث الثقافي والآثار العراقية رقمياً">
 
     <title>{% block title %}الأرشيف الرقمي الآمن{% endblock %}</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-
 <body>
 
 <div class="app-layout">
@@ -37,7 +33,7 @@
                 <span>لوحة التحكم</span>
             </a>
 
-            <a href="{{ url_for('artifacts') }}" class="nav-link">
+            <a href="{{ url_for('artifacts.index') }}" class="nav-link">
                 <span>𒀸</span>
                 <span>القطع الأثرية</span>
             </a>
@@ -64,12 +60,12 @@
                     <span>إدارة المستخدمين</span>
                 </a>
             {% endif %}
-         
+
             <!-- زر تسجيل الخروج (يظهر للمستخدم المُسجّل دخوله فقط) -->
             {% if current_user.is_authenticated %}
-                <form method="POST" action="{{ url_for('auth.logout') }}">
+                <form method="POST" action="{{ url_for('auth.logout') }}" class="logout-form">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <button type="submit" class="nav-link">
+                    <button type="submit" class="nav-link logout-btn">
                         <span>↪</span>
                         <span>تسجيل الخروج</span>
                     </button>
@@ -89,7 +85,6 @@
     <div class="main-area">
 
         <header class="topbar">
-
             <button class="menu-toggle"
                     id="menuToggle"
                     type="button"
@@ -105,13 +100,10 @@
             <div class="topbar-info">
                 <span>نظام الأرشفة والحماية الرقمية</span>
             </div>
-
         </header>
 
         <main class="container">
-
             {% block content %}{% endblock %}
-
         </main>
 
         <footer class="site-footer">

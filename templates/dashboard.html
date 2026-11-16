@@ -24,7 +24,7 @@
         <div class="stat-icon">𒀸</div>
         <div class="stat-label">القطع الأثرية</div>
         <div class="stat-number">{{ stats.artifacts }}</div>
-        <a href="{{ url_for('artifacts') }}">عرض القطع ←</a>
+        <a href="{{ url_for('artifacts.index') }}">عرض القطع ←</a>
     </article>
 
     <article class="stat-card">
@@ -60,7 +60,7 @@
 
     <div class="collection-grid">
 
-        <a href="{{ url_for('artifacts') }}" class="collection-card">
+        <a href="{{ url_for('artifacts.index') }}" class="collection-card">
             <span class="collection-symbol">𒀸</span>
             <h3>القطع الأثرية</h3>
             <p>توثيق اللقى والمقتنيات والمواد الأثرية العراقية.</p>

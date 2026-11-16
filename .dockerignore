@@ -1,0 +1,17 @@
+﻿.env
+.env.*
+!.env.example
+.git/
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.dump
+*.bak
+*.sqlite
+*.sqlite3
+uploads/
+temporary_review_backup/
+ntent .models.py
+.pytest_cache/
+.coverage
