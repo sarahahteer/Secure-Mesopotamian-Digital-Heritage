@@ -1,4 +1,4 @@
-
+﻿
 from pathlib import Path
 from io import BytesIO
 import hashlib
@@ -21,8 +21,6 @@ from models import Artifact, MediaFile, AuditLog
 from authorization import permission_required, ROLE_PERMISSIONS
 
 from file_validation import validate_image
-from file_storage import save_to_quarantine
-from malware_scanner import scan_file
 from file_encryption import encrypt_file, generate_stored_filename
 from supabase_storage import upload_encrypted_file, delete_stored_file
 
@@ -76,7 +74,7 @@ def create():
         ).strip()
 
         if not inventory_number or not name_ar:
-            flash("رقم الجرد واسم القطعة حقول مطلوبة.", "warning")
+            flash("Ø±Ù‚Ù… Ø§Ù„Ø¬Ø±Ø¯ ÙˆØ§Ø³Ù… Ø§Ù„Ù‚Ø·Ø¹Ø© Ø­Ù‚ÙˆÙ„ Ù…Ø·Ù„ÙˆØ¨Ø©.", "warning")
             return render_template("artifact_create.html")
 
         existing = Artifact.query.filter_by(
@@ -84,7 +82,7 @@ def create():
         ).first()
 
         if existing:
-            flash("رقم الجرد مستخدم مسبقاً.", "danger")
+            flash("Ø±Ù‚Ù… Ø§Ù„Ø¬Ø±Ø¯ Ù…Ø³ØªØ®Ø¯Ù… Ù…Ø³Ø¨Ù‚Ø§Ù‹.", "danger")
             return render_template("artifact_create.html")
 
         artifact = Artifact(
@@ -109,32 +107,46 @@ def create():
             if uploaded_image and uploaded_image.filename:
 
                 image_data = uploaded_image.read()
-
                 validate_image(image_data)
 
-                quarantine_name = save_to_quarantine(image_data)
-
-                quarantine_path = (
-                    Path(current_app.config["QUARANTINE_DIR"])
-                    / quarantine_name
-                )
-
-                # لا يُسمح بحفظ الصورة قبل نجاح فحصها
-                scan_file(quarantine_path)
-
+                # Verify the image before processing it.
                 with Image.open(BytesIO(image_data)) as image:
+                    image.verify()
+
+                # Reopen, decode and re-encode to remove original metadata.
+                with Image.open(BytesIO(image_data)) as image:
+                    if image.width * image.height > 25_000_000:
+                        raise ValueError("????? ?????? ????? ????.")
+
                     image_format = image.format
+                    image.load()
 
-                mime_types = {
-                    "JPEG": "image/jpeg",
-                    "PNG": "image/png",
-                    "WEBP": "image/webp"
-                }
+                    output = BytesIO()
 
-                mime_type = mime_types.get(image_format)
+                    if image_format == "JPEG":
+                        image.convert("RGB").save(
+                            output, format="JPEG", quality=90, optimize=True
+                        )
+                        mime_type = "image/jpeg"
 
-                if not mime_type:
-                    raise ValueError("صيغة الصورة غير مسموحة.")
+                    elif image_format == "PNG":
+                        if image.mode not in ("RGB", "RGBA"):
+                            image = image.convert("RGBA")
+                        image.save(output, format="PNG", optimize=True)
+                        mime_type = "image/png"
+
+                    elif image_format == "WEBP":
+                        if image.mode not in ("RGB", "RGBA"):
+                            image = image.convert("RGBA")
+                        image.save(
+                            output, format="WEBP", quality=90, method=6
+                        )
+                        mime_type = "image/webp"
+
+                    else:
+                        raise ValueError("???? ?????? ??? ??????.")
+
+                    image_data = output.getvalue()
 
                 original_name = (
                     secure_filename(uploaded_image.filename)[:255]
@@ -158,7 +170,7 @@ def create():
                     mime_type=mime_type,
                     sha256=hashlib.sha256(image_data).hexdigest(),
                     encrypted=True,
-                    scan_status="clean"
+                    scan_status="validated"
                 )
 
                 db.session.add(media)
@@ -169,7 +181,7 @@ def create():
                 entity_type="artifact",
                 entity_id=artifact.id,
                 ip_address=request.remote_addr,
-                details="تمت إضافة قطعة أثرية"
+                details="ØªÙ…Øª Ø¥Ø¶Ø§ÙØ© Ù‚Ø·Ø¹Ø© Ø£Ø«Ø±ÙŠØ©"
             )
 
             db.session.add(log)
@@ -186,7 +198,7 @@ def create():
                         "Failed to remove uploaded object."
                     )
 
-            flash("تعذر حفظ القطعة. قد يكون رقم الجرد مستخدماً.", "danger")
+            flash("ØªØ¹Ø°Ø± Ø­ÙØ¸ Ø§Ù„Ù‚Ø·Ø¹Ø©. Ù‚Ø¯ ÙŠÙƒÙˆÙ† Ø±Ù‚Ù… Ø§Ù„Ø¬Ø±Ø¯ Ù…Ø³ØªØ®Ø¯Ù…Ø§Ù‹.", "danger")
             return render_template("artifact_create.html")
 
         except Exception:
@@ -205,7 +217,7 @@ def create():
             )
 
             flash(
-                "تعذر حفظ القطعة أو الصورة. لم يتم اعتماد الصورة.",
+                "ØªØ¹Ø°Ø± Ø­ÙØ¸ Ø§Ù„Ù‚Ø·Ø¹Ø© Ø£Ùˆ Ø§Ù„ØµÙˆØ±Ø©. Ù„Ù… ÙŠØªÙ… Ø§Ø¹ØªÙ…Ø§Ø¯ Ø§Ù„ØµÙˆØ±Ø©.",
                 "danger"
             )
             return render_template("artifact_create.html")
@@ -224,12 +236,12 @@ def create():
                         "Failed to remove quarantine file."
                     )
 
-        flash("تمت إضافة القطعة الأثرية بنجاح.", "success")
+        flash("ØªÙ…Øª Ø¥Ø¶Ø§ÙØ© Ø§Ù„Ù‚Ø·Ø¹Ø© Ø§Ù„Ø£Ø«Ø±ÙŠØ© Ø¨Ù†Ø¬Ø§Ø­.", "success")
         return redirect(url_for("artifacts.index"))
 
     return render_template("artifact_create.html")
 
-# عرض صورة القطعة الأثرية للمستخدمين المصرح لهم
+# Ø¹Ø±Ø¶ ØµÙˆØ±Ø© Ø§Ù„Ù‚Ø·Ø¹Ø© Ø§Ù„Ø£Ø«Ø±ÙŠØ© Ù„Ù„Ù…Ø³ØªØ®Ø¯Ù…ÙŠÙ† Ø§Ù„Ù…ØµØ±Ø­ Ù„Ù‡Ù…
 @artifacts_bp.get("/image/<int:media_id>")
 @permission_required("view")
 def artifact_image(media_id):
@@ -237,7 +249,7 @@ def artifact_image(media_id):
     media = MediaFile.query.filter_by(
         id=media_id,
         encrypted=True,
-        scan_status="clean"
+        scan_status="validated"
     ).first_or_404()
 
     allowed_mime_types = {
@@ -274,3 +286,4 @@ def artifact_image(media_id):
             "Failed to retrieve artifact image."
         )
         abort(404)
+
